@@ -50,32 +50,45 @@ class App extends Component {
 
   onSubmit = () => {
     const errors = this.validateFields()
-    if (Object.keys(errors).length > 0) {
-      this.props.errorData(errors);
-    } else {
-      this.onRegister() 
-    }
+  //   if (Object.keys(errors).length > 0) {
+  //     this.props.errorData(errors);
+  //   } else {
+  //     this.onRegister() 
+  //   }
+    this.onRegister() 
   }
 
-  onRegister = () => {
+  onRegister = () => { 
+    const { values } = this.props;
     return fetch( 'http://localhost:3002/register', {
       method: 'POST',
       headers: {
         "Content-type": "application/json"
       },
       body: JSON.stringify({
-        name: this.props.values.username,
-        dialCode: +this.props.values.code,
-        mobile: this.props.values.mobile,
-        email: this.props.values.email,
+        name: values.username,
+        dialCode: + values.code,
+        mobile: values.mobile,
+        email: values.email,
         country: "UK",
-        password: this.props.values.password,
-        passwordConfirmation: this.props.values.repeatPassword,
+        password: values.password,
+        passwordConfirmation: values.repeatPassword,
       })
     })
       .then(res => res.json())
-      .then(response => console.log('Успех:', JSON.stringify(response.name)))
-      .catch(error => console.error('Ошибка:', error));
+      .then(response => {
+        if (JSON.stringify(response.errors)) {
+          console.log("error", [JSON.stringify(response)])
+          const resp = [JSON.stringify(response)];
+          return rek.values(resp).map( error => (
+            console.log(error) 
+          ))
+        } else {
+          console.log("Not error", JSON.stringify(response))
+        }=
+       }
+      )
+      .catch(error => console.error('Error:', error));
   }
 
   
@@ -149,7 +162,7 @@ class App extends Component {
 
   render() {
     const { isActive}  = this.state;
-    const { onChangeValues, onChangeCountry, values, errors} = this.props;
+    const { onChangeValues, values, errors} = this.props;
     return (
       <div className="app">
         <div className="form-container">
