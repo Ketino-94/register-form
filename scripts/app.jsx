@@ -13,6 +13,15 @@ import { bindActionCreators } from "redux";
 
 class App extends Component {
   state = {
+    errors: {
+      name: '',
+      code: 0,
+      mobile: '',
+      email: '',
+      country: 0,
+      password: '',
+      passwordConfirmation: '',
+    },
     isActive: false
   }
 
@@ -60,6 +69,7 @@ class App extends Component {
 
   onRegister = () => { 
     const { values } = this.props;
+    const errors  = {}
     return fetch( 'http://localhost:3002/register', {
       method: 'POST',
       headers: {
@@ -77,15 +87,22 @@ class App extends Component {
     })
       .then(res => res.json())
       .then(response => {
-        if (JSON.stringify(response.errors)) {
-          console.log("error", [JSON.stringify(response)])
-          const resp = [JSON.stringify(response)];
-          return rek.values(resp).map( error => (
-            console.log(error) 
-          ))
+        if (response.errors) {
+          console.log("error", response)
+          let errors = {}
+          response.errors.forEach(item => {
+            errors[item.param] = item.msg
+          })
+          console.log(errors)
+          this.setState(prevState => ({
+            errors: {
+              ...prevState.errors,
+              ...errors
+            }
+          }))
         } else {
-          console.log("Not error", JSON.stringify(response))
-        }=
+          console.log("Not error", response)
+        }
        }
       )
       .catch(error => console.error('Error:', error));
@@ -114,9 +131,9 @@ class App extends Component {
     //   ))
     // }
     return items.map(item => (
-      <option key={item.id} value={item.id}>
-        +{item.dial_code}  {item.name}
-      </option>
+        <option key={item.id} value={item.id}>
+          +{item.dial_code}  {item.name}
+        </option>
     ))
   }
 
@@ -161,8 +178,9 @@ class App extends Component {
   }
 
   render() {
-    const { isActive}  = this.state;
-    const { onChangeValues, values, errors} = this.props;
+    const { isActive, errors}  = this.state;
+    const { onChangeValues, values} = this.props;
+    console.log(errors)
     return (
       <div className="app">
         <div className="form-container">
