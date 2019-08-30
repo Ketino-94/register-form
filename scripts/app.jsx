@@ -192,7 +192,7 @@ class App extends Component {
               type="text"
               name="username"
               value={values.username}
-              error={errors.username}
+              error={errors.name}
               isActive={isActive}
               handleFocus={this.handleFocus}
             />
